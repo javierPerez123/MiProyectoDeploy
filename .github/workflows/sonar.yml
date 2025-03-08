@@ -2,7 +2,7 @@ name: SonarCloud Scan
 on:
   push:
     branches:
-      - main
+      - master
 #Prueba Día 2
 jobs:
   sonarcloud:
