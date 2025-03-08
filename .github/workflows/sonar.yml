@@ -3,12 +3,22 @@ on:
   push:
     branches:
       - master
-#Prueba Día 2
 jobs:
   sonarcloud:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Setup .NET Framework 4.8
+      run: |
+        # Descargar e instalar .NET Framework 4.8 si no está presente
+        $url = "https://download.visualstudio.microsoft.com/download/pr/7afca223-55d2-470a-8edc-6a1731e4ad75/b6f6c6e5e1e252b0a1233b9a8a0f4348/ndp48-web.exe"
+        $output = "$env:TEMP\ndp48-web.exe"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Start-Process -FilePath $output -Args "/q" -Wait
+        # Verificar instalación
+        if (-not (Test-Path "C:\Windows\Microsoft.NET\Framework\v4.8.0")) {
+          throw "Failed to install .NET Framework 4.8"
+        }
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
