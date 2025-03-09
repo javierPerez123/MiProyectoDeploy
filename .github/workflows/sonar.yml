@@ -17,7 +17,12 @@ jobs:
         $output = ".\sonarscanner\sonar-scanner.zip"
         Invoke-WebRequest -Uri $url -OutFile $output
         Expand-Archive -Path $output -DestinationPath ".\sonarscanner" -Force
-        # Verificar que el ejecutable exista
+        # Listar contenido para depurar
+        Write-Output "Contenido de sonarscanner:"
+        dir .\sonarscanner\
+        Write-Output "Contenido de subcarpetas:"
+        Get-ChildItem -Path ".\sonarscanner" -Recurse
+        # Verificar que el ejecutable exista (ajustar la ruta según el resultado)
         if (-not (Test-Path ".\sonarscanner\sonar-scanner-9.2.1.110358-net-framework\SonarScanner.MSBuild.exe")) {
           throw "SonarScanner.MSBuild.exe no encontrado en la ruta esperada. Verifica la extracción."
         }
