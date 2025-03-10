@@ -7,6 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   sonarcloud:
+    name: Build and analyze
     runs-on: windows-latest
     steps:
     - name: Set up JDK 17
@@ -17,6 +18,12 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+    - name: Cache SonarQube Cloud packages
+      uses: actions/cache@v4
+      with:
+        path: ~\sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1
     - name: Install SonarScanner for MSBuild
@@ -40,7 +47,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true /d:sonar.projectBaseDir="."
+        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true
     - name: Build Project
       run: |
         msbuild MiProyectoDeploy.sln /t:Rebuild
@@ -49,4 +56,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" end /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.projectBaseDir="."
+        & ".\sonarscanner\SonarScanner.MSBuild.exe" end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
