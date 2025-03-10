@@ -2,7 +2,7 @@ name: SonarQube
 on:
   push:
     branches:
-      - master # Cambia a "main" si tu rama predeterminada es main
+      - master
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -40,7 +40,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true /d:sonar.projectBaseDir="D:\a\MiProyectoDeploy\MiProyectoDeploy"
+        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true /d:sonar.projectBaseDir="."
     - name: Build Project
       run: |
         msbuild MiProyectoDeploy.sln /t:Rebuild
@@ -49,4 +49,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        & ".\sonarscanner\SonarScanner.MSBuild.exe" end /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.projectBaseDir="."
