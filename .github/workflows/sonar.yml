@@ -47,7 +47,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true /d:sonar.branch.name="main" /d:sonar.verbose=true /d:sonar.projectVersion="1.0"
+        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /v:"1.0" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true /d:sonar.branch.name="main" /d:sonar.verbose=true
     - name: Build Project
       run: |
         msbuild MiProyectoDeploy.sln /t:Rebuild /p:Configuration=Release
