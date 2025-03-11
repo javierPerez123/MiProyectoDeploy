@@ -8,8 +8,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: dotnet publish -c Release -o ./publish
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+    - name: Build with MSBuild
+      run: msbuild MiProyectoDeploy.csproj -t:Build -p:Configuration=Release -p:OutputPath=..\publish
     - name: Zip the publish folder
       run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
     - name: Upload to S3
