@@ -28,18 +28,16 @@ jobs:
       uses: microsoft/setup-msbuild@v1
     - name: Install SonarScanner for MSBuild
       run: |
-        New-Item -ItemType Directory -Path ".\sonarscanner" -Force
+        New-Item -Path .\.sonarscanner -ItemType Directory -Force
         $url = "https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/9.2.1.110358/sonar-scanner-9.2.1.110358-net-framework.zip"
         $output = ".\sonarscanner\sonar-scanner.zip"
         Invoke-WebRequest -Uri $url -OutFile $output
-        Expand-Archive -Path $output -DestinationPath ".\sonarscanner" -Force
-        # Listar contenido para depurar
+        Expand-Archive -Path $output -DestinationPath .\.sonarscanner -Force
         Write-Output "Contenido de sonarscanner:"
-        dir .\sonarscanner\
+        dir .\.sonarscanner\
         Write-Output "Contenido de subcarpetas:"
-        Get-ChildItem -Path ".\sonarscanner" -Recurse
-        # Verificar que el ejecutable exista
-        if (-not (Test-Path ".\sonarscanner\SonarScanner.MSBuild.exe")) {
+        Get-ChildItem -Path .\.sonarscanner -Recurse
+        if (-not (Test-Path .\.sonarscanner\SonarScanner.MSBuild.exe)) {
           throw "SonarScanner.MSBuild.exe no encontrado en la ruta esperada. Verifica la extracción."
         }
     - name: Begin SonarScanner Analysis
@@ -47,7 +45,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true
+        & .\.sonarscanner\SonarScanner.MSBuild.exe begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles=true
     - name: Build Project
       run: |
         msbuild MiProyectoDeploy.sln /t:Rebuild
@@ -56,4 +54,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        & ".\sonarscanner\SonarScanner.MSBuild.exe" end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        & .\.sonarscanner\SonarScanner.MSBuild.exe end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
