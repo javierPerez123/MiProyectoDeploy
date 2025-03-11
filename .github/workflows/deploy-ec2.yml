@@ -11,7 +11,9 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
     - name: Build with MSBuild
-      run: msbuild MiProyectoDeploy.csproj -t:Build -p:Configuration=Release -p:OutputPath=..\publish
+      run: msbuild MiProyectoDeploy.csproj -t:Publish -p:Configuration=Release -p:OutputPath=..\publish
+    - name: List publish folder contents
+      run: dir ./publish
     - name: Zip the publish folder
       run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
     - name: Upload to S3
