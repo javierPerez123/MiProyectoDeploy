@@ -9,31 +9,31 @@ on:
 
 jobs:
   sonarcloud:
-    name: Build and analyze
+    name: Construir y analizar
     runs-on: windows-latest
     steps:
-      - name: Set up JDK 17
+      - name: Configurar JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Checkout code
+      - name: Descargar código
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Required for better branch analysis
+          fetch-depth: 0 # Necesario para un mejor análisis de ramas
 
-      - name: Cache SonarCloud packages
+      - name: Cachear paquetes de SonarCloud
         uses: actions/cache@v4
         with:
-          path: ~\sonar\cache
+          path: C:\Users\runneradmin\.sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Set up MSBuild
+      - name: Configurar MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Install SonarScanner for MSBuild
+      - name: Instalar SonarScanner para MSBuild
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path ".\sonarscanner" -Force
@@ -42,10 +42,10 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile $output
           Expand-Archive -Path $output -DestinationPath ".\sonarscanner" -Force
           if (-not (Test-Path ".\sonarscanner\SonarScanner.MSBuild.exe")) {
-            throw "SonarScanner.MSBuild.exe not found. Check extraction."
+            throw "No se encontró SonarScanner.MSBuild.exe. Revisa la extracción."
           }
 
-      - name: Begin SonarScanner Analysis
+      - name: Iniciar análisis de SonarScanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -53,12 +53,12 @@ jobs:
         run: |
           & ".\sonarscanner\SonarScanner.MSBuild.exe" begin /k:"MiProyectoDeploy" /o:"javierperez123" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.scanAllFiles="true" /d:sonar.branch.name="main" /d:sonar.verbose="true"
 
-      - name: Build Project
+      - name: Construir proyecto
         shell: pwsh
         run: |
           msbuild MiProyectoDeploy.sln /t:Rebuild
 
-      - name: End SonarScanner Analysis
+      - name: Finalizar análisis de SonarScanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
