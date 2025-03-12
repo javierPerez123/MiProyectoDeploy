@@ -34,7 +34,7 @@ jobs:
 
     # Desplegar con CodeDeploy
     - name: Desplegar con CodeDeploy
-      run: aws deploy create-deployment --application-name MiProyectoDeployApp --deployment-group-name MiProyectoDeployGroup --s3-location bucket=mi-proyecto-deploy-2025,bundleType=zip,key=deploy.zip
+      run: aws deploy create-deployment --application-name MiProyectoDeployApp --deployment-group-name MiProyectoDeployGroup --s3-location bucket=javier-deploy-bucket-2025,bundleType=zip,key=deploy.zip
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
