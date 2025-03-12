@@ -27,7 +27,7 @@ jobs:
 
     # Subir a S3
     - name: Subir a S3
-      run: aws s3 cp ./deploy.zip s3://mi-proyecto-deploy-2025/deploy.zip
+      run: aws s3 cp ./deploy.zip s3://javier-deploy-bucket-2025/deploy.zip
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
