@@ -8,21 +8,12 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
-    - name: Build and Publish with MSBuild
-      run: |
-        msbuild MiProyectoDeploy.csproj -t:Publish -p:Configuration=Release -p:WebPublishMethod=FileSystem -p:publishUrl=publish -p:DeleteExistingFiles=True
-    - name: Debug: Check publish directory
-      run: |
-        if (Test-Path "./publish") {
-          echo "Publish folder exists."
-        } else {
-          echo "ERROR: Publish folder does NOT exist."
-          exit 1
-        }
-    - name: List publish folder contents
-      run: dir ./publish
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '4.8'
+    - name: Build
+      run: dotnet publish -c Release -o ./publish
     - name: Zip the publish folder
       run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
     - name: Upload to S3
