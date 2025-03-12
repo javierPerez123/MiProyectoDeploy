@@ -11,7 +11,8 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
     - name: Build and Publish with MSBuild
-      run: msbuild MiProyectoDeploy.csproj -t:Publish -p:Configuration=Release -p:WebPublishMethod=FileSystem -p:publishUrl=publish -p:DeleteExistingFiles=True
+      run: |
+        msbuild MiProyectoDeploy.csproj -t:Publish -p:Configuration=Release -p:WebPublishMethod=FileSystem -p:publishUrl=publish -p:DeleteExistingFiles=True
     - name: Debug: Check publish directory
       run: |
         if (Test-Path "./publish") {
