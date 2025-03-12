@@ -21,7 +21,7 @@ jobs:
       - name: Descargar código
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necesario para un mejor análisis de ramas   
+          fetch-depth: 0 # Necesario para un mejor análisis de ramas
 
       - name: Cachear paquetes de SonarCloud
         uses: actions/cache@v4
