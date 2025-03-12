@@ -8,8 +8,12 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Compilar
-      run: dotnet publish -c Release -o ./publish
+    - name: Instalar .NET Framework 4.8
+      run: |
+        Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?linkid=2088631" -OutFile "dotnet-framework-installer.exe"
+        Start-Process -FilePath "dotnet-framework-installer.exe" -ArgumentList "/quiet /norestart" -Wait
+    - name: Compilar con MSBuild
+      run: msbuild MiProyectoDeploy.sln /p:Configuration=Release /p:OutputPath=./publish
     - name: Comprimir la carpeta de publicación
       run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
     - name: Subir a S3
