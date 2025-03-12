@@ -7,27 +7,30 @@ jobs:
   deploy:
     runs-on: windows-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
+    - uses: actions/checkout@v3
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
-
-    - name: Build with MSBuild
-      run: |
-        echo "Verificando MSBuild..."
-        Get-Command msbuild -ErrorAction Stop
-        echo "Ejecutando MSBuild..."
-        msbuild MiProyectoDeploy.csproj -t:Publish -p:Configuration=Release -p:PublishDir=./publish
-
+    - name: Build and Publish with MSBuild
+      run: msbuild MiProyectoDeploy.csproj -t:Publish -p:Configuration=Release -p:WebPublishMethod=FileSystem -p:publishUrl=publish -p:DeleteExistingFiles=True
     - name: Debug: Check publish directory
-      shell: pwsh
       run: |
-          if (Test-Path "./publish") {
-            Write-Host "Publish folder exists."
-          } else {
-            Write-Host "ERROR: Publish folder does NOT exist."
-            exit 1
-          }
+        if (Test-Path "./publish") {
+          echo "Publish folder exists."
+        } else {
+          echo "ERROR: Publish folder does NOT exist."
+          exit 1
+        }
     - name: List publish folder contents
-      run: Get-ChildItem ./publish
+      run: dir ./publish
+    - name: Zip the publish folder
+      run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
+    - name: Upload to S3
+      run: aws s3 cp ./deploy.zip s3://mi-proyecto-deploy-2025/deploy.zip
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Deploy with CodeDeploy
+      run: aws deploy create-deployment --application-name MiProyectoDeployApp --deployment-group-name MiProyectoDeployGroup --s3-location bucket=mi-proyecto-deploy-2025,bundleType=zip,key=deploy.zip
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
