@@ -1,8 +1,10 @@
 version: 0.0
 os: windows
 files:
-  - source: /
+  - source: Default.aspx
     destination: C:\inetpub\wwwroot
 hooks:
+  BeforeInstall:
+    - location: scripts/before_install.bat
   AfterInstall:
-    - location: scripts/after_install.ps1
+    - location: scripts/after_install.bat
