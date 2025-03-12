@@ -17,18 +17,22 @@ jobs:
         $msbuildPath = .\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe"
         echo "MSBUILD_PATH=$msbuildPath" >> $env:GITHUB_ENV
 
-    # Compilar con MSBuild (corregido con comillas)
+    # Compilar con MSBuild
     - name: Compilar con MSBuild
       run: "& '${{ env.MSBUILD_PATH }}' MiProyectoDeploy.sln /p:Configuration=Release /p:OutputPath=./publish"
 
-    # Comprimir, subir a S3 y desplegar
+    # Comprimir la carpeta de publicación
     - name: Comprimir la carpeta de publicación
       run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
+
+    # Subir a S3
     - name: Subir a S3
       run: aws s3 cp ./deploy.zip s3://mi-proyecto-deploy-2025/deploy.zip
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # Desplegar con CodeDeploy
     - name: Desplegar con CodeDeploy
       run: aws deploy create-deployment --application-name MiProyectoDeployApp --deployment-group-name MiProyectoDeployGroup --s3-location bucket=mi-proyecto-deploy-2025,bundleType=zip,key=deploy.zip
       env:
