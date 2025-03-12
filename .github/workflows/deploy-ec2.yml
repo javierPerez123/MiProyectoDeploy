@@ -8,12 +8,20 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '4.8'
-    - name: Build
-      run: dotnet publish -c Release -o ./publish
+
+    # Encontrar ruta de MSBuild (ya que .NET Framework 4.8 está preinstalado en windows-latest)
+    - name: Encontrar ruta de MSBuild
+      id: msbuild
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/microsoft/vswhere/releases/download/3.1.1/vswhere.exe" -OutFile "vswhere.exe"
+        $msbuildPath = .\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe"
+        echo "MSBUILD_PATH=$msbuildPath" >> $env:GITHUB_ENV
+
+    # Compilar con MSBuild
+    - name: Compilar con MSBuild
+      run: ${{ env.MSBUILD_PATH }} MiProyectoDeploy.sln /p:Configuration=Release /p:OutputPath=./publish
+
+    # Comprimir, subir a S3 y desplegar
     - name: Comprimir la carpeta de publicación
       run: Compress-Archive -Path ./publish/* -DestinationPath ./deploy.zip
     - name: Subir a S3
