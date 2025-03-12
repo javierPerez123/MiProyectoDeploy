@@ -1,7 +1,9 @@
 version: 0.0
 os: windows
 files:
-  - source: Default.aspx
+  - source: PublishedWebsites/Default.aspx
+    destination: C:\inetpub\wwwroot
+  - source: PublishedWebsites/web.config
     destination: C:\inetpub\wwwroot
 hooks:
   BeforeInstall:
