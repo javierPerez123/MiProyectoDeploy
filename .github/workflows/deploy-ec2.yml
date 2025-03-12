@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # Encontrar ruta de MSBuild (ya que .NET Framework 4.8 está preinstalado en windows-latest)
+    # Encontrar ruta de MSBuild
     - name: Encontrar ruta de MSBuild
       id: msbuild
       run: |
@@ -17,9 +17,9 @@ jobs:
         $msbuildPath = .\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe"
         echo "MSBUILD_PATH=$msbuildPath" >> $env:GITHUB_ENV
 
-    # Compilar con MSBuild
+    # Compilar con MSBuild (corregido con comillas)
     - name: Compilar con MSBuild
-      run: ${{ env.MSBUILD_PATH }} MiProyectoDeploy.sln /p:Configuration=Release /p:OutputPath=./publish
+      run: "& '${{ env.MSBUILD_PATH }}' MiProyectoDeploy.sln /p:Configuration=Release /p:OutputPath=./publish"
 
     # Comprimir, subir a S3 y desplegar
     - name: Comprimir la carpeta de publicación
